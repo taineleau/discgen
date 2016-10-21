@@ -16,6 +16,7 @@ from blocks.graph import (ComputationGraph, apply_batch_normalization,
                           get_batch_normalization_updates, apply_dropout)
 from blocks.initialization import IsotropicGaussian, Constant
 from blocks.main_loop import MainLoop
+from blocks.model import Model
 from blocks.roles import OUTPUT
 from theano import tensor
 
@@ -116,6 +117,32 @@ def run():
 
     cg, bn_dropout_cg = create_training_computation_graphs()
 
+    model = Model(bn_dropout_cg)
+
+    # (params) = model.get_parameter_dict()
+    #
+    # f = open('params.pkl', 'w')
+    #
+    # pkl.dump(params, f)
+    #
+    # f.close()
+    #
+    # # print(params)
+    # orz1 = params.popitem()
+    # orz2 = params.popitem()
+    # orz3 = params.popitem()
+    #
+    # orzorz = params.items()[0]
+    # print(orzorz)
+    #
+    # print(orzorz[1])
+    #
+    # for attr in dir(orz2):
+    #     print attr
+
+    # numpy.save('orz', (orz1, orz2, orz3))
+
+
     # Compute parameter updates for the batch normalization population
     # statistics. They are updated following an exponential moving average.
     pop_updates = get_batch_normalization_updates(bn_dropout_cg)
@@ -148,12 +175,12 @@ def run():
 
     # Prepare checkpoint
     checkpoint = Checkpoint(
-        'celeba_classifier.zip', every_n_epochs=5, use_cpickle=True)
+        'celebA_100_new.zip', every_n_epochs=5, use_cpickle=True)
 
-    extensions = [Timing(), FinishAfter(after_n_epochs=50), train_monitoring,
+    extensions = [Timing(), FinishAfter(after_n_epochs=100), train_monitoring,
                   valid_monitoring, checkpoint, Printing(), ProgressBar()]
     main_loop = MainLoop(data_stream=main_loop_stream, algorithm=algorithm,
-                         extensions=extensions)
+                         extensions=extensions, model=model)
     main_loop.run()
 
 
