@@ -22,7 +22,7 @@ from blocks.model import Model
 
 import cPickle as pkl
 
-from utils import create_celeba_streams
+from celebA_fuel_loader import create_celeba_streams
 
 
 def create_model_bricks():
@@ -69,7 +69,7 @@ def create_model_bricks():
             Rectifier(),
         ],
         num_channels=3,
-        image_size=(64, 64),
+        image_size=(128, 128),
         use_bias=True,
         weights_init=IsotropicGaussian(0.033),
         biases_init=Constant(0),
@@ -113,7 +113,7 @@ def create_training_computation_graphs():
 def run():
     streams = create_celeba_streams(training_batch_size=100,
                                     monitoring_batch_size=500,
-                                    include_targets=True)
+                                    quality='128')
     main_loop_stream = streams[0]
     train_monitor_stream = streams[1]
     valid_monitor_stream = streams[2]
@@ -177,7 +177,7 @@ def run():
 
     # Prepare checkpoint
     checkpoint = Checkpoint(
-        'celebA_50_noBN_bias.zip', every_n_epochs=10, use_cpickle=True)
+        'celebA_128_50_noBN_bias.zip', every_n_epochs=10, use_cpickle=True)
 
     extensions = [Timing(), FinishAfter(after_n_epochs=50), train_monitoring,
                   valid_monitoring, checkpoint, Printing(), ProgressBar()]
