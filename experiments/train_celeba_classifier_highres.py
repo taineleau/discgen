@@ -30,42 +30,49 @@ def create_model_bricks():
         layers=[
             Convolutional(
                 filter_size=(4, 4),
-                num_filters=32,
+                num_filters=64,
                 name='conv1'),
             #SpatialBatchNormalization(name='batch_norm1'),
             Rectifier(),
             Convolutional(
                 filter_size=(3, 3),
                 step=(2, 2),
-                num_filters=32,
+                num_filters=128,
                 name='conv2'),
             #SpatialBatchNormalization(name='batch_norm2'),
             Rectifier(),
             Convolutional(
                 filter_size=(4, 4),
-                num_filters=64,
+                num_filters=128,
                 name='conv3'),
             #SpatialBatchNormalization(name='batch_norm3'),
             Rectifier(),
             Convolutional(
                 filter_size=(3, 3),
                 step=(2, 2),
-                num_filters=64,
+                num_filters=256,
                 name='conv4'),
             #SpatialBatchNormalization(name='batch_norm4'),
             Rectifier(),
             Convolutional(
                 filter_size=(3, 3),
-                num_filters=128,
+                num_filters=256,
                 name='conv5'),
             #SpatialBatchNormalization(name='batch_norm5'),
             Rectifier(),
             Convolutional(
                 filter_size=(3, 3),
                 step=(2, 2),
-                num_filters=128,
+                num_filters=512,
                 name='conv6'),
             #SpatialBatchNormalization(name='batch_norm6'),
+            Rectifier(),
+            Convolutional(
+                filter_size=(3, 3),
+                step=(1, 1),
+                num_filters=512,
+                name='conv7'),
+            # SpatialBatchNormalization(name='batch_norm6'),
             Rectifier(),
         ],
         num_channels=3,
@@ -173,11 +180,11 @@ def run():
     monitored_quantities = [cost, accuracy]
     valid_monitoring = DataStreamMonitoring(
         monitored_quantities, valid_monitor_stream, prefix="valid",
-        before_first_epoch=False, after_epoch=False, every_n_epochs=5)
+        before_first_epoch=False, after_epoch=False, every_n_epochs=1)
 
     # Prepare checkpoint
     checkpoint = Checkpoint(
-        'celebA_128_50_noBN_bias.zip', every_n_epochs=10, use_cpickle=True)
+        'celebA_128_test.zip', every_n_epochs=10, use_cpickle=True)
 
     extensions = [Timing(), FinishAfter(after_n_epochs=50), train_monitoring,
                   valid_monitoring, checkpoint, Printing(), ProgressBar()]
